@@ -1,6 +1,8 @@
 class WorksController < ApplicationController
   # We should always be able to tell what category
   # of work we're dealing with
+  #esta linea la puse yo el skio before
+  #skip_before_action :require_login, only: [:root]
   before_action :category_from_work, except: [:root, :index, :new, :create]
 
   def root

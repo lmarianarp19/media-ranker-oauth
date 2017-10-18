@@ -38,6 +38,13 @@ gem 'jbuilder', '~> 2.5'
 
 # Use the Foundation CSS framework
 gem 'foundation-rails'
+gem 'awesome_print'
+gem "omniauth"
+gem "omniauth-github"
+gem "binding_of_caller"
+
+
+
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -58,6 +65,7 @@ group :test do
 end
 
 group :development do
+  gem 'dotenv-rails'
   # Access an IRB console on exception pages or by using <%= console %> anywhere in the code.
   gem 'web-console', '>= 3.3.0'
   gem 'listen', '~> 3.0.5'
