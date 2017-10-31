@@ -3,6 +3,14 @@ class WorksController < ApplicationController
   # of work we're dealing with
 
   before_action :category_from_work, except: [:root, :index, :new, :create]
+  # before_action only: [:destroy] do
+  #   @work = Work.find_by(id: params[:id])
+  #   if (@work.owner).to_i !=  @user.id
+  #     flash[:status] = :failure
+  #     flash[:result_text] = "You don't have permission to delete this work"
+  #     redirect_to root_path
+  #   end
+  # end
   skip_before_action :require_login, only: [:root]
 
   def root
@@ -47,11 +55,11 @@ class WorksController < ApplicationController
 
   def edit
     @work = Work.find_by(id: params[:id])
-      unless (@work.owner).to_i ==  @user.id
-        flash[:status] = :failure
-        flash[:result_text] = "You don't have permission to edit this work"
-        redirect_to root_path
-      end
+    unless (@work.owner).to_i ==  @user.id
+      flash[:status] = :failure
+      flash[:result_text] = "You don't have permission to edit this work"
+      redirect_to root_path
+    end
   end
 
   def update
@@ -70,15 +78,16 @@ class WorksController < ApplicationController
 
   def destroy
     @work = Work.find_by(id: params[:id])
-      unless (@work.owner).to_i ==  @user.id
-        flash[:status] = :failure
-        flash[:result_text] = "You don't have permission to edit this work"
-        redirect_to root_path
-      end    
-    @work.destroy
-    flash[:status] = :success
-    flash[:result_text] = "Successfully destroyed #{@media_category.singularize} #{@work.id}"
-    redirect_to root_path
+    if (@work.owner).to_i !=  @user.id
+      flash[:status] = :failure
+      flash[:result_text] = "You don't have permission to delete this work"
+      redirect_to root_path
+    else
+      @work.destroy
+      flash[:status] = :success
+      flash[:result_text] = "Successfully destroyed #{@media_category.singularize} #{@work.id}"
+      redirect_to root_path
+   end
   end
 
   def upvote
