@@ -1,9 +1,9 @@
 class WorksController < ApplicationController
   # We should always be able to tell what category
   # of work we're dealing with
-  #esta linea la puse yo el skio before
-  #skip_before_action :require_login, only: [:root]
+
   before_action :category_from_work, except: [:root, :index, :new, :create]
+  skip_before_action :require_login, only: [:root]
 
   def root
     @albums = Work.best_albums
@@ -17,11 +17,17 @@ class WorksController < ApplicationController
   end
 
   def new
-    @work = Work.new
+    if @user
+      @work = Work.new
+    else
+      flash_unathorized
+      redirect_to root_path
+    end
   end
 
   def create
     @work = Work.new(media_params)
+    @work.owner = @user.id
     @media_category = @work.category
     if @work.save
       flash[:status] = :success
@@ -40,6 +46,12 @@ class WorksController < ApplicationController
   end
 
   def edit
+    @work = Work.find_by(id: params[:id])
+      unless (@work.owner).to_i ==  @user.id
+        flash[:status] = :failure
+        flash[:result_text] = "You don't have permission to edit this work"
+        redirect_to root_path
+      end
   end
 
   def update
@@ -57,6 +69,12 @@ class WorksController < ApplicationController
   end
 
   def destroy
+    @work = Work.find_by(id: params[:id])
+      unless (@work.owner).to_i ==  @user.id
+        flash[:status] = :failure
+        flash[:result_text] = "You don't have permission to edit this work"
+        redirect_to root_path
+      end    
     @work.destroy
     flash[:status] = :success
     flash[:result_text] = "Successfully destroyed #{@media_category.singularize} #{@work.id}"
@@ -90,7 +108,7 @@ class WorksController < ApplicationController
     redirect_back fallback_location: work_path(@work), status: status
   end
 
-private
+  private
   def media_params
     params.require(:work).permit(:title, :category, :creator, :description, :publication_year)
   end

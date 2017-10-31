@@ -3,7 +3,7 @@ class SessionsController < ApplicationController
   # end
 
   #esta linea la puse yo
-  # skip_before_action :require_login, only: [:login, :logout]
+  skip_before_action :require_login, only: [:login, :logout]
 
   def login
     auth_hash = request.env['omniauth.auth']
